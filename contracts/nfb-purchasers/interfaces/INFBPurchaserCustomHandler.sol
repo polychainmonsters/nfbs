@@ -1,4 +1,5 @@
 // SPDX-License-Identifier: MIT
+// NFB Contracts v0.0.2
 pragma solidity ^0.8.9;
 
 interface INFBPurchaserCustomHandler {

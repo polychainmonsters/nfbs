@@ -1,11 +1,12 @@
 {
   "name": "@polychainmonsters/nfbs",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "NFBs are Non-Fungible Boosters aka \"packs\" that contain one or more other NFTs.",
   "main": "index.js",
   "scripts": {
     "compile": "npx hardhat compile",
-    "test": "npx hardhat test"
+    "test": "npx hardhat test",
+    "update-version": "scripts/release/update-version.js"
   },
   "repository": {
     "type": "git",
@@ -20,6 +21,7 @@
   "devDependencies": {
     "@nomicfoundation/hardhat-toolbox": "^2.0.1",
     "@openzeppelin/hardhat-upgrades": "^1.22.1",
+    "glob": "^8.1.0",
     "hardhat": "^2.12.7"
   },
   "dependencies": {

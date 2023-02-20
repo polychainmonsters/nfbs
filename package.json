@@ -1,5 +1,5 @@
 {
-  "name": "nfbs",
+  "name": "@polychainmonsters/nfbs",
   "version": "0.0.1",
   "description": "NFBs are Non-Fungible Boosters aka \"packs\" that contain one or more other NFTs.",
   "main": "index.js",

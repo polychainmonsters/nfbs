@@ -54,7 +54,8 @@ describe("NFBAndPurchaser", function () {
     const nfbImageTokenURIGetter = await NFBImageTokenURIGetter.deploy(
       nfb.address,
       "Test NFB",
-      "ipfs://QmeqjYUz5eUHqxZFzQuvYtUCm7yvSY1TYCbxUPzv5UEidm"
+      "ipfs://QmeqjYUz5eUHqxZFzQuvYtUCm7yvSY1TYCbxUPzv5UEidm",
+      true
     );
     await nfb.setTokenURIGetter(1, 1, nfbImageTokenURIGetter.address);
     await nfb.setTokenURIGetter(1, 2, nfbImageTokenURIGetter.address);

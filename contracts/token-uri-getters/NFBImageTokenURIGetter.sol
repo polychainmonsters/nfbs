@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-// NFB Contracts v0.0.2
+// NFB Contracts v0.0.3
 pragma solidity ^0.8.0;
 
 import "@openzeppelin/contracts/utils/Strings.sol";
@@ -48,15 +48,18 @@ contract NFBImageTokenURIGetter is INFBTokenURIGetter {
     INFB public nfb;
     string public name;
     string public imageURI;
+    bool public hasEditionDescription;
 
     constructor(
         INFB _nfb,
         string memory _name,
-        string memory _imageURI
+        string memory _imageURI,
+        bool _hasEditionDescription
     ) {
         nfb = _nfb;
         name = _name;
         imageURI = _imageURI;
+        hasEditionDescription = _hasEditionDescription;
     }
 
     /// @dev Returns the token ID as the NFB number. If the token ID exceeds integer limits, it won't work.
@@ -74,6 +77,16 @@ contract NFBImageTokenURIGetter is INFBTokenURIGetter {
             editionId
         );
 
+        string memory editionDescriptionStr = hasEditionDescription
+            ? string(
+                abi.encodePacked(
+                    '{"trait_type":"Edition","value":"',
+                    editionDescription,
+                    '"},'
+                )
+            )
+            : "";
+
         return
             string(
                 abi.encodePacked(
@@ -82,9 +95,9 @@ contract NFBImageTokenURIGetter is INFBTokenURIGetter {
                     // lets also add the series id as an attribute
                     '"},{"trait_type":"Series ID","display_type":"number","value":',
                     seriesId.toString(),
-                    '},{"trait_type":"Edition","value":"',
-                    editionDescription,
-                    '"},{"trait_type":"Edition ID","display_type":"number","value":',
+                    "},",
+                    editionDescriptionStr,
+                    '{"trait_type":"Edition ID","display_type":"number","value":',
                     editionId.toString(),
                     '},{"trait_type":"NFB Number","display_type":"number","value":',
                     tokenId.toString(),

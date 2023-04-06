@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-// NFB Contracts v0.0.2
+// NFB Contracts v0.0.3
 pragma solidity ^0.8.9;
 
 import "@openzeppelin/contracts-upgradeable/access/AccessControlUpgradeable.sol";
@@ -116,7 +116,10 @@ contract GenericNFBPurchaser is Initializable, AccessControlUpgradeable {
     // For viewers
 
     /// @dev Utility function to read information from a frontend.
-    function getNFBInfo(uint16 seriesId, uint8 editionId)
+    function getNFBInfo(
+        uint16 seriesId,
+        uint8 editionId
+    )
         external
         view
         returns (
@@ -288,10 +291,10 @@ contract GenericNFBPurchaser is Initializable, AccessControlUpgradeable {
         );
     }
 
-    function toggleEnforceTokenPayment(uint16 seriesId, uint8 editionId)
-        external
-        onlyRole(MANAGER_ROLE)
-    {
+    function toggleEnforceTokenPayment(
+        uint16 seriesId,
+        uint8 editionId
+    ) external onlyRole(MANAGER_ROLE) {
         enforceTokenPayments[seriesId][editionId] = !enforceTokenPayments[
             seriesId
         ][editionId];

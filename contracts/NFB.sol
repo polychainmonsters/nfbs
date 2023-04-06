@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-// NFB Contracts v0.0.2
+// NFB Contracts v0.0.3
 pragma solidity ^0.8.9;
 
 import "erc721a/contracts/ERC721A.sol";
@@ -23,20 +23,6 @@ contract NFB is
     ERC721AQueryable,
     ERC721ABurnable
 {
-    /// @dev Series is meant to be used like this:
-    /// Name = Polychain Monsters Gen1, Description = First generation of Polychain Monsters.
-    struct Series {
-        string name;
-        string description;
-    }
-
-    /// @dev Every series can have multiple editions, for example to have a limited 1. edition.
-    struct Edition {
-        uint256 availableFrom;
-        uint256 availableUntil;
-        string description;
-    }
-
     bytes32 public constant MINTER_ROLE = keccak256("MINTER_ROLE");
     bytes32 public constant MANAGER_ROLE = keccak256("MANAGER_ROLE");
 
@@ -83,9 +69,10 @@ contract NFB is
         _;
     }
 
-    constructor(string memory name, string memory symbol)
-        ERC721A(name, symbol)
-    {
+    constructor(
+        string memory name,
+        string memory symbol
+    ) ERC721A(name, symbol) {
         _grantRole(DEFAULT_ADMIN_ROLE, msg.sender);
         _grantRole(MANAGER_ROLE, msg.sender);
     }
@@ -151,12 +138,9 @@ contract NFB is
 
     // Some extra view functions
 
-    function getSeriesAndEdition(uint256 tokenId)
-        public
-        view
-        override
-        returns (uint16 seriesId, uint8 editionId)
-    {
+    function getSeriesAndEdition(
+        uint256 tokenId
+    ) public view override returns (uint16 seriesId, uint8 editionId) {
         (seriesId, editionId) = splitSeriesAndEditionId(
             _ownershipOf(tokenId).extraData
         );
@@ -167,11 +151,9 @@ contract NFB is
     /**
      * @dev This internal helper function will not check if the token actually exists.
      */
-    function tokenURIInternal(uint256 tokenId)
-        internal
-        view
-        returns (string memory)
-    {
+    function tokenURIInternal(
+        uint256 tokenId
+    ) internal view returns (string memory) {
         (uint16 seriesId, uint8 editionId) = splitSeriesAndEditionId(
             _ownershipOf(tokenId).extraData
         );
@@ -189,25 +171,18 @@ contract NFB is
             );
     }
 
-    function tokenURI(uint256 tokenId)
-        public
-        view
-        virtual
-        override(ERC721A, IERC721A)
-        returns (string memory)
-    {
+    function tokenURI(
+        uint256 tokenId
+    ) public view virtual override(ERC721A, IERC721A) returns (string memory) {
         require(_exists(tokenId), "NFB: Non-existent token");
 
         return tokenURIInternal(tokenId);
     }
 
     /// @dev You might want to still get the metadata for burned packs and display them in your frontend.
-    function tokenURIForBurned(uint256 tokenId)
-        public
-        view
-        virtual
-        returns (string memory)
-    {
+    function tokenURIForBurned(
+        uint256 tokenId
+    ) public view virtual returns (string memory) {
         require(!_exists(tokenId), "NFB: Non-burned token");
 
         return tokenURIInternal(tokenId);
@@ -215,11 +190,9 @@ contract NFB is
 
     // For metadata updating by the manager(s)
 
-    function freezeSeries(uint16 id)
-        external
-        onlyRole(MANAGER_ROLE)
-        seriesIsNotFrozen(id)
-    {
+    function freezeSeries(
+        uint16 id
+    ) external onlyRole(MANAGER_ROLE) seriesIsNotFrozen(id) {
         isSeriesFrozen[id] = true;
         emit SeriesFrozen(id);
     }
@@ -265,12 +238,9 @@ contract NFB is
 
     // The following functions are overrides required by Solidity.
 
-    function supportsInterface(bytes4 interfaceId)
-        public
-        view
-        override(ERC721A, IERC721A, AccessControl)
-        returns (bool)
-    {
+    function supportsInterface(
+        bytes4 interfaceId
+    ) public view override(ERC721A, IERC721A, AccessControl) returns (bool) {
         return super.supportsInterface(interfaceId);
     }
 
@@ -278,32 +248,26 @@ contract NFB is
         super.burn(tokenId);
     }
 
-    function ownerOf(uint256 tokenId)
-        public
-        view
-        override(ERC721A, IERC721A, INFB)
-        returns (address)
-    {
+    function ownerOf(
+        uint256 tokenId
+    ) public view override(ERC721A, IERC721A, INFB) returns (address) {
         return super.ownerOf(tokenId);
     }
 
     // Some utility functions
 
-    function joinSeriesAndEditionId(uint16 seriesId, uint8 editionId)
-        private
-        pure
-        returns (uint24 seriesAndEditionId)
-    {
+    function joinSeriesAndEditionId(
+        uint16 seriesId,
+        uint8 editionId
+    ) private pure returns (uint24 seriesAndEditionId) {
         // Shift the uint16 value left by 8 bits to make room for the uint8 value
         // Add the uint8 value to the uint24 value
         seriesAndEditionId = (seriesId << 8) | editionId;
     }
 
-    function splitSeriesAndEditionId(uint24 seriesAndEditionId)
-        private
-        pure
-        returns (uint16 seriesId, uint8 editionId)
-    {
+    function splitSeriesAndEditionId(
+        uint24 seriesAndEditionId
+    ) private pure returns (uint16 seriesId, uint8 editionId) {
         // Mask the top 8 bits of the uint24 value to get the uint8 value
         editionId = uint8(seriesAndEditionId & 0xFF);
         // Shift the uint24 value right by 8 bits to get the uint16 value

@@ -3,8 +3,12 @@ import { expect } from "chai";
 
 describe("NFBImageTokenURIGetter", () => {
   async function deployFixture() {
+    const [deployer] = await ethers.getSigners();
+
     const MockNFB = await ethers.getContractFactory("MockNFB");
     const mockNFB = await MockNFB.deploy();
+    await mockNFB.initialize("Mock Name", "MOCK", deployer.address);
+    await mockNFB.setSeries(1, "Mock Series", "Mock Description");
 
     const NFBImageTokenURIGetter = await ethers.getContractFactory(
       "NFBImageTokenURIGetter"
@@ -12,7 +16,7 @@ describe("NFBImageTokenURIGetter", () => {
     const nfbImageTokenURIGetter = await NFBImageTokenURIGetter.deploy(
       mockNFB.address,
       "Mock Name",
-      "https://mock-serever.com/mock-image.png",
+      "https://mock-server.com/mock-image.png",
       false
     );
     return { mockNFB, nfbImageTokenURIGetter };
@@ -23,7 +27,7 @@ describe("NFBImageTokenURIGetter", () => {
       id: "0",
       name: "Mock Name #0",
       description: "Mock Description",
-      image: "https://mock-serever.com/mock-image.png",
+      image: "https://mock-server.com/mock-image.png",
       attributes: [
         {
           trait_type: "Series",

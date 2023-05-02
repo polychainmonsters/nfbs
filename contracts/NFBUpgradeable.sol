@@ -1,13 +1,15 @@
 // SPDX-License-Identifier: MIT
-// NFB Contracts v0.0.3
+// NFB Contracts v0.0.4
 pragma solidity ^0.8.9;
 
-import "erc721a/contracts/ERC721A.sol";
-import "erc721a/contracts/IERC721A.sol";
-import "erc721a/contracts/extensions/ERC721ABurnable.sol";
-import "erc721a/contracts/extensions/ERC721AQueryable.sol";
-import "@openzeppelin/contracts/access/Ownable.sol";
-import "@openzeppelin/contracts/access/AccessControl.sol";
+import "erc721a-upgradeable/contracts/IERC721AUpgradeable.sol";
+import "erc721a-upgradeable/contracts/ERC721AUpgradeable.sol";
+import "erc721a-upgradeable/contracts/ERC721A__Initializable.sol";
+import "erc721a-upgradeable/contracts/extensions/ERC721ABurnableUpgradeable.sol";
+import "erc721a-upgradeable/contracts/extensions/ERC721AQueryableUpgradeable.sol";
+import "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol";
+import "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol";
+import "@openzeppelin/contracts-upgradeable/access/AccessControlUpgradeable.sol";
 import "./interfaces/INFBTokenURIGetter.sol";
 import "./interfaces/INFB.sol";
 import "./interfaces/INFBOpenerExternal.sol";
@@ -15,13 +17,15 @@ import "./interfaces/INFBOpenerExternal.sol";
 /// @dev Contract uses Ownable + AccessControl because some marketplaces allow editing collection details (e.g. royalties)
 /// by the owner and not by the admin. They call the owner() function. The owner does not have any other
 /// access rights in this contract.
-contract NFB is
+abstract contract NFBUpgradeable is
     INFB,
-    Ownable,
-    AccessControl,
-    ERC721A,
-    ERC721AQueryable,
-    ERC721ABurnable
+    Initializable,
+    OwnableUpgradeable,
+    AccessControlUpgradeable,
+    ERC721A__Initializable,
+    ERC721AUpgradeable,
+    ERC721AQueryableUpgradeable,
+    ERC721ABurnableUpgradeable
 {
     bytes32 public constant MINTER_ROLE = keccak256("MINTER_ROLE");
     bytes32 public constant MANAGER_ROLE = keccak256("MANAGER_ROLE");
@@ -69,12 +73,19 @@ contract NFB is
         _;
     }
 
-    constructor(
-        string memory name,
-        string memory symbol
-    ) ERC721A(name, symbol) {
-        _grantRole(DEFAULT_ADMIN_ROLE, msg.sender);
-        _grantRole(MANAGER_ROLE, msg.sender);
+    function __NFBUpgradeable_init(string memory name, string memory symbol, address owner) internal onlyInitializing onlyInitializingERC721A {
+        __Ownable_init();
+        __AccessControl_init();
+        __ERC721A_init(name, symbol);
+        __ERC721AQueryable_init();
+        __ERC721ABurnable_init();
+
+        __NFBUpgradeable_init_unchained(owner);
+    }
+
+    function __NFBUpgradeable_init_unchained(address owner) internal onlyInitializing onlyInitializingERC721A {
+        _setupRole(DEFAULT_ADMIN_ROLE, owner);
+        _setupRole(MANAGER_ROLE, owner);
     }
 
     /// @dev This is not meant to be a public minting function, but rather a function that can be called by other contracts.
@@ -173,7 +184,7 @@ contract NFB is
 
     function tokenURI(
         uint256 tokenId
-    ) public view virtual override(ERC721A, IERC721A) returns (string memory) {
+    ) public view virtual override(ERC721AUpgradeable, IERC721AUpgradeable) returns (string memory) {
         require(_exists(tokenId), "NFB: Non-existent token");
 
         return tokenURIInternal(tokenId);
@@ -240,17 +251,17 @@ contract NFB is
 
     function supportsInterface(
         bytes4 interfaceId
-    ) public view override(ERC721A, IERC721A, AccessControl) returns (bool) {
+    ) public view override(ERC721AUpgradeable, IERC721AUpgradeable, AccessControlUpgradeable) returns (bool) {
         return super.supportsInterface(interfaceId);
     }
 
-    function burn(uint256 tokenId) public override(INFB, ERC721ABurnable) {
+    function burn(uint256 tokenId) public override(INFB, ERC721ABurnableUpgradeable) {
         super.burn(tokenId);
     }
 
     function ownerOf(
         uint256 tokenId
-    ) public view override(ERC721A, IERC721A, INFB) returns (address) {
+    ) public view override(ERC721AUpgradeable, IERC721AUpgradeable, INFB) returns (address) {
         return super.ownerOf(tokenId);
     }
 

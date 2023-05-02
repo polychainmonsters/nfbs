@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-// NFB Contracts v0.0.3
+// NFB Contracts v0.0.4
 pragma solidity ^0.8.9;
 
 interface INFBTokenURIGetter {

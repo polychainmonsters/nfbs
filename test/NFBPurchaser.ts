@@ -5,8 +5,10 @@ import { parseTokenUri, deployFixture } from "./utils";
 describe("NFBAndPurchaser", function () {
   async function deployFixture() {
     const [owner, otherAccount, minter] = await ethers.getSigners();
-    const NFB = await ethers.getContractFactory("NFB");
-    const nfb = await NFB.deploy("Test NFB", "TNFB");
+    const NFB = await ethers.getContractFactory("MockNFB");
+    const nfb = await NFB.deploy();
+    await nfb.initialize("Test NFB", "TNFB", owner.address);
+
     await nfb.grantRole(
       ethers.utils.keccak256(ethers.utils.toUtf8Bytes("MINTER_ROLE")),
       minter.address

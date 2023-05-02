@@ -16,22 +16,6 @@ task("accounts", "Prints the list of accounts", async (_, { ethers }) => {
   }
 });
 
-const optimizerSettings = process.env.OPTIMIZE
-  ? {
-      settings: {
-        optimizer: {
-          enabled: true,
-          runs: 1000,
-        },
-        viaIR: true,
-      },
-    }
-  : {};
-
-if (process.env.OPTIMIZE === "true" || process.env.OPTIMIZE === "1") {
-  console.log("Optimizer on!");
-}
-
 const accounts = process.env.PRIVATE_KEY
   ? [`0x${process.env.PRIVATE_KEY}`]
   : [];
@@ -70,7 +54,13 @@ const config: HardhatUserConfig = {
     compilers: [
       {
         version: "0.8.17",
-        ...optimizerSettings,
+        settings: {
+          optimizer: {
+            enabled: true,
+            runs: 1000,
+          },
+          viaIR: true,
+        },
       },
     ],
   },

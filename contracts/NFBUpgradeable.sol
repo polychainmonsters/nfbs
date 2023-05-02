@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-// NFB Contracts v0.0.4
+// NFB Contracts v0.0.5
 pragma solidity ^0.8.9;
 
 import "erc721a-upgradeable/contracts/IERC721AUpgradeable.sol";
@@ -73,7 +73,11 @@ abstract contract NFBUpgradeable is
         _;
     }
 
-    function __NFBUpgradeable_init(string memory name, string memory symbol, address owner) internal onlyInitializing onlyInitializingERC721A {
+    function __NFBUpgradeable_init(
+        string memory name,
+        string memory symbol,
+        address owner
+    ) internal onlyInitializing onlyInitializingERC721A {
         __Ownable_init();
         __AccessControl_init();
         __ERC721A_init(name, symbol);
@@ -83,7 +87,9 @@ abstract contract NFBUpgradeable is
         __NFBUpgradeable_init_unchained(owner);
     }
 
-    function __NFBUpgradeable_init_unchained(address owner) internal onlyInitializing onlyInitializingERC721A {
+    function __NFBUpgradeable_init_unchained(
+        address owner
+    ) internal onlyInitializing onlyInitializingERC721A {
         _setupRole(DEFAULT_ADMIN_ROLE, owner);
         _setupRole(MANAGER_ROLE, owner);
     }
@@ -184,7 +190,13 @@ abstract contract NFBUpgradeable is
 
     function tokenURI(
         uint256 tokenId
-    ) public view virtual override(ERC721AUpgradeable, IERC721AUpgradeable) returns (string memory) {
+    )
+        public
+        view
+        virtual
+        override(ERC721AUpgradeable, IERC721AUpgradeable)
+        returns (string memory)
+    {
         require(_exists(tokenId), "NFB: Non-existent token");
 
         return tokenURIInternal(tokenId);
@@ -251,17 +263,33 @@ abstract contract NFBUpgradeable is
 
     function supportsInterface(
         bytes4 interfaceId
-    ) public view override(ERC721AUpgradeable, IERC721AUpgradeable, AccessControlUpgradeable) returns (bool) {
+    )
+        public
+        view
+        override(
+            ERC721AUpgradeable,
+            IERC721AUpgradeable,
+            AccessControlUpgradeable
+        )
+        returns (bool)
+    {
         return super.supportsInterface(interfaceId);
     }
 
-    function burn(uint256 tokenId) public override(INFB, ERC721ABurnableUpgradeable) {
+    function burn(
+        uint256 tokenId
+    ) public override(INFB, ERC721ABurnableUpgradeable) {
         super.burn(tokenId);
     }
 
     function ownerOf(
         uint256 tokenId
-    ) public view override(ERC721AUpgradeable, IERC721AUpgradeable, INFB) returns (address) {
+    )
+        public
+        view
+        override(ERC721AUpgradeable, IERC721AUpgradeable, INFB)
+        returns (address)
+    {
         return super.ownerOf(tokenId);
     }
 

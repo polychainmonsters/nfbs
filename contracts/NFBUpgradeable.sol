@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-// NFB Contracts v0.0.5
+// NFB Contracts v0.0.6
 pragma solidity ^0.8.9;
 
 import "erc721a-upgradeable/contracts/IERC721AUpgradeable.sol";

@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-// NFB Contracts v0.1.0
+// NFB Contracts v0.1.1
 pragma solidity ^0.8.9;
 
 import "@openzeppelin/contracts-upgradeable/access/AccessControlUpgradeable.sol";
@@ -33,7 +33,7 @@ contract GenericNFBPurchaser is Initializable, AccessControlUpgradeable {
     }
 
     event NFBSet(
-        uint16 indexed seriesId,
+        uint8 indexed seriesId,
         uint8 indexed editionId,
         address indexed collection,
         uint256 availableAmount,
@@ -42,7 +42,7 @@ contract GenericNFBPurchaser is Initializable, AccessControlUpgradeable {
     );
 
     event PaymentTokenSet(
-        uint16 indexed seriesId,
+        uint8 indexed seriesId,
         uint8 indexed editionId,
         address indexed token,
         uint256 priceInTokens,
@@ -50,7 +50,7 @@ contract GenericNFBPurchaser is Initializable, AccessControlUpgradeable {
     );
 
     event EnforceTokenPaymentToggled(
-        uint16 indexed seriesId,
+        uint8 indexed seriesId,
         uint8 indexed editionId,
         bool indexed newValue
     );
@@ -62,7 +62,7 @@ contract GenericNFBPurchaser is Initializable, AccessControlUpgradeable {
     );
 
     event NFBsPurchased(
-        uint16 indexed seriesId,
+        uint8 indexed seriesId,
         uint8 indexed editionId,
         uint256 indexed amount,
         address to,
@@ -70,13 +70,13 @@ contract GenericNFBPurchaser is Initializable, AccessControlUpgradeable {
         PurchaseType purchaseType
     );
 
-    mapping(uint16 => mapping(uint8 => NFB)) public nfbs;
-    mapping(uint16 => mapping(uint8 => mapping(address => PaymentToken)))
+    mapping(uint8 => mapping(uint8 => NFB)) public nfbs;
+    mapping(uint8 => mapping(uint8 => mapping(address => PaymentToken)))
         public paymentTokens;
-    mapping(uint16 => mapping(uint8 => bool)) public enforceTokenPayments;
-    mapping(uint16 => mapping(uint8 => INFBPurchaserCustomHandler))
+    mapping(uint8 => mapping(uint8 => bool)) public enforceTokenPayments;
+    mapping(uint8 => mapping(uint8 => INFBPurchaserCustomHandler))
         public customHandlers;
-    mapping(uint16 => mapping(uint8 => uint256)) public nfbsSold;
+    mapping(uint8 => mapping(uint8 => uint256)) public nfbsSold;
 
     function initialize() public initializer {
         __AccessControl_init();
@@ -175,7 +175,7 @@ contract GenericNFBPurchaser is Initializable, AccessControlUpgradeable {
 
     function processPayment(
         address purchaser,
-        uint16 seriesId,
+        uint8 seriesId,
         uint8 editionId,
         uint256 amount,
         IERC20 paymentToken
@@ -247,7 +247,7 @@ contract GenericNFBPurchaser is Initializable, AccessControlUpgradeable {
     // For the manager
 
     function setNFB(
-        uint16 seriesId,
+        uint8 seriesId,
         uint8 editionId,
         INFB collection,
         uint256 availableAmount,
@@ -271,7 +271,7 @@ contract GenericNFBPurchaser is Initializable, AccessControlUpgradeable {
     }
 
     function setPaymentToken(
-        uint16 seriesId,
+        uint8 seriesId,
         uint8 editionId,
         IERC20 token,
         uint256 priceInTokens,
@@ -292,7 +292,7 @@ contract GenericNFBPurchaser is Initializable, AccessControlUpgradeable {
     }
 
     function toggleEnforceTokenPayment(
-        uint16 seriesId,
+        uint8 seriesId,
         uint8 editionId
     ) external onlyRole(MANAGER_ROLE) {
         enforceTokenPayments[seriesId][editionId] = !enforceTokenPayments[
@@ -306,7 +306,7 @@ contract GenericNFBPurchaser is Initializable, AccessControlUpgradeable {
     }
 
     function setCustomHandler(
-        uint16 seriesId,
+        uint8 seriesId,
         uint8 editionId,
         INFBPurchaserCustomHandler handler
     ) external onlyRole(MANAGER_ROLE) {

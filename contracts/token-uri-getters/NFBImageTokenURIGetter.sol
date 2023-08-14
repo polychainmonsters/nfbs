@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-// NFB Contracts v0.0.7
+// NFB Contracts v0.1.0
 pragma solidity ^0.8.0;
 
 import "@openzeppelin/contracts/utils/Strings.sol";
@@ -66,8 +66,9 @@ contract NFBImageTokenURIGetter is INFBTokenURIGetter {
     /// This is for NFB contracts that don't expect the token ID out of integer scope.
     function getAttributes(
         uint256 tokenId,
-        uint16 seriesId,
-        uint8 editionId
+        uint8 seriesId,
+        uint8 editionId,
+        uint8
     ) internal view returns (string memory) {
         (string memory seriesName, string memory seriesDescription) = nfb
             .series(seriesId);
@@ -108,8 +109,9 @@ contract NFBImageTokenURIGetter is INFBTokenURIGetter {
 
     function tokenURI(
         uint256 tokenId,
-        uint16 seriesId,
-        uint8 editionId
+        uint8 seriesId,
+        uint8 editionId,
+        uint8 variantId
     ) external view returns (string memory) {
         (string memory seriesName, string memory seriesDescription) = nfb
             .series(seriesId);
@@ -130,7 +132,7 @@ contract NFBImageTokenURIGetter is INFBTokenURIGetter {
                         '","image":"',
                         imageURI,
                         '",',
-                        getAttributes(tokenId, seriesId, editionId),
+                        getAttributes(tokenId, seriesId, editionId, variantId),
                         "}"
                     )
                 )

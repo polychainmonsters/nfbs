@@ -49,6 +49,10 @@ const config: HardhatUserConfig = {
       url: "https://data-seed-prebsc-1-s1.binance.org:8545/",
       accounts,
     },
+    nova: {
+      url: "https://nova.arbitrum.io/rpc",
+      accounts,
+    },
   },
   solidity: {
     compilers: [

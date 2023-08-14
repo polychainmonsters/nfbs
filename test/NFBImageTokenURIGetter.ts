@@ -52,7 +52,7 @@ describe("NFBImageTokenURIGetter", () => {
     };
 
     const { nfbImageTokenURIGetter } = await deployFixture();
-    const tokenURI = await nfbImageTokenURIGetter.tokenURI(0, 1, 1);
+    const tokenURI = await nfbImageTokenURIGetter.tokenURI(0, 1, 1, 0);
     // decode the tokenURI
     const decodedTokenURI = Buffer.from(
       tokenURI.split(",")[1],

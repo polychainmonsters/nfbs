@@ -146,7 +146,7 @@ describe("NFBAndPurchaser", function () {
 
       const minterRole = await nfb.MINTER_ROLE();
       await expect(
-        nfb.connect(otherAccount).mint(otherAccount.address, 20, 1, 1)
+        nfb.connect(otherAccount).mint(otherAccount.address, 20, 1, 1, 0)
       ).to.be.revertedWith(
         `AccessControl: account 0x70997970c51812dc3a010c7d01b50e0d17dc79c8 is missing role ${minterRole}`
       );
@@ -155,9 +155,9 @@ describe("NFBAndPurchaser", function () {
     it("should allow minting for existing editions", async () => {
       const { minter, nfb, otherAccount } = await deployFixture();
 
-      await nfb.connect(minter).mint(otherAccount.address, 20, 2, 1);
-      await nfb.connect(minter).mint(otherAccount.address, 20, 1, 1);
-      await nfb.connect(minter).mint(otherAccount.address, 20, 1, 2);
+      await nfb.connect(minter).mint(otherAccount.address, 20, 2, 1, 0);
+      await nfb.connect(minter).mint(otherAccount.address, 20, 1, 1, 0);
+      await nfb.connect(minter).mint(otherAccount.address, 20, 1, 2, 0);
 
       const tokenUriExample_id5 = parseTokenUri(await nfb.tokenURI(5));
       const tokenUriExample_id30 = parseTokenUri(await nfb.tokenURI(30));
@@ -267,9 +267,9 @@ describe("NFBAndPurchaser", function () {
       await nfb.connect(otherAccount).burn(45);
       await nfb.connect(otherAccount).burn(59); // also burn the last one
 
-      await nfb.connect(minter).mint(otherAccount.address, 1, 2, 1);
-      await nfb.connect(minter).mint(otherAccount.address, 1, 1, 2);
-      await nfb.connect(minter).mint(otherAccount.address, 1, 1, 1);
+      await nfb.connect(minter).mint(otherAccount.address, 1, 2, 1, 0);
+      await nfb.connect(minter).mint(otherAccount.address, 1, 1, 2, 0);
+      await nfb.connect(minter).mint(otherAccount.address, 1, 1, 1, 0);
 
       const tokenUriExample_id60 = parseTokenUri(await nfb.tokenURI(60));
       const tokenUriExample_id61 = parseTokenUri(await nfb.tokenURI(61));
@@ -319,7 +319,7 @@ describe("NFBAndPurchaser", function () {
       const { minter, nfb, otherAccount } = await deployFixture();
 
       await expect(
-        nfb.connect(minter).mint(otherAccount.address, 20, 3, 1)
+        nfb.connect(minter).mint(otherAccount.address, 20, 3, 1, 0)
       ).to.be.revertedWith("NFB: Series or edition is not available");
     });
 
@@ -327,7 +327,7 @@ describe("NFBAndPurchaser", function () {
       const { minter, nfb, otherAccount } = await deployFixture();
 
       await expect(
-        nfb.connect(minter).mint(otherAccount.address, 20, 1, 3)
+        nfb.connect(minter).mint(otherAccount.address, 20, 1, 3, 0)
       ).to.be.revertedWith("NFB: Series or edition is not available");
     });
 
@@ -339,7 +339,7 @@ describe("NFBAndPurchaser", function () {
       ]);
 
       await expect(
-        nfb.connect(minter).mint(otherAccount.address, 20, 1, 1)
+        nfb.connect(minter).mint(otherAccount.address, 20, 1, 1, 0)
       ).to.be.revertedWith("NFB: Series or edition is not available");
     });
   });
@@ -369,10 +369,42 @@ describe("NFBAndPurchaser", function () {
     it("should allow setting a TokenURIGetter", async () => {
       const { minter, mockNFBTokenURIGetter, nfb } = await deployFixture();
       await nfb.setTokenURIGetter(1, 1, mockNFBTokenURIGetter.address);
-      await nfb.connect(minter).mint(minter.address, 1, 1, 1);
+      await nfb.connect(minter).mint(minter.address, 1, 1, 1, 0);
 
       const tokenUriExample_id0 = parseTokenUri(await nfb.tokenURI(0));
       expect(tokenUriExample_id0.name).to.equal("Series 1");
+    });
+  });
+
+  describe("variant should be stored", async () => {
+    it("should allow minting with variant", async () => {
+      const { minter, nfb, otherAccount, mockNFBTokenURIGetter } =
+        await deployFixture();
+
+      await nfb.setTokenURIGetter(1, 2, mockNFBTokenURIGetter.address);
+      await nfb.connect(minter).mint(otherAccount.address, 3, 1, 2, 3);
+
+      for (let i = 0; i < 3; i++) {
+        const [series, edition, variant] = await nfb.getSeriesEditionAndVariant(
+          i
+        );
+        expect(series).to.equal(1);
+        expect(edition).to.equal(2);
+        expect(variant).to.equal(3);
+      }
+
+      await nfb
+        .connect(otherAccount)
+        .transferFrom(otherAccount.address, minter.address, 0);
+
+      // variant should be kept with token on transfer
+      const [_, __, variant] = await nfb.getSeriesEditionAndVariant(0);
+      expect(variant).to.equal(3);
+
+      // fetch and parse the token URI
+      const tokenUri = parseTokenUri(await nfb.tokenURI(0));
+      expect(tokenUri.name).to.equal("Series 1");
+      expect(tokenUri.variant).to.equal(3);
     });
   });
 });

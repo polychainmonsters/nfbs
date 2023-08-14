@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-// NFB Contracts v0.0.7
+// NFB Contracts v0.1.0
 pragma solidity ^0.8.9;
 
 interface INFB {
@@ -24,12 +24,13 @@ interface INFB {
     function mint(
         address to,
         uint256 amount,
-        uint16 seriesId,
-        uint8 editionId
+        uint8 seriesId,
+        uint8 editionId,
+        uint8 variantId
     ) external returns (uint256 startTokenId);
 
     function editions(
-        uint16 seriesId,
+        uint8 seriesId,
         uint8 id
     )
         external
@@ -41,10 +42,10 @@ interface INFB {
         );
 
     function series(
-        uint16 id
+        uint8 id
     ) external view returns (string memory name, string memory description);
 
-    function getSeriesAndEdition(
+    function getSeriesEditionAndVariant(
         uint256 tokenId
-    ) external view returns (uint16 seriesId, uint8 editionId);
+    ) external view returns (uint8 seriesId, uint8 editionId, uint8 variantId);
 }

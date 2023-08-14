@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-// NFB Contracts v0.0.7
+// NFB Contracts v0.1.0
 pragma solidity ^0.8.0;
 
 import "../NFBUpgradeable.sol";

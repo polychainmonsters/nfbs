@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-// NFB Contracts v0.0.7
+// NFB Contracts v0.1.0
 pragma solidity ^0.8.9;
 
 import "@openzeppelin/contracts-upgradeable/access/AccessControlUpgradeable.sol";
@@ -94,7 +94,7 @@ contract GenericNFBPurchaser is Initializable, AccessControlUpgradeable {
     /// @param paymentToken The token to pay with (optional)
     /// @param purchaseType The type of purchase (for analytics purposes)
     function purchaseNFBs(
-        uint16 seriesId,
+        uint8 seriesId,
         uint8 editionId,
         uint256 amount,
         address to,
@@ -117,7 +117,7 @@ contract GenericNFBPurchaser is Initializable, AccessControlUpgradeable {
 
     /// @dev Utility function to read information from a frontend.
     function getNFBInfo(
-        uint16 seriesId,
+        uint8 seriesId,
         uint8 editionId
     )
         external
@@ -152,7 +152,7 @@ contract GenericNFBPurchaser is Initializable, AccessControlUpgradeable {
     // Internal stuff
 
     function handleNFBPurchase(
-        uint16 seriesId,
+        uint8 seriesId,
         uint8 editionId,
         uint256 amount,
         address to,
@@ -170,7 +170,7 @@ contract GenericNFBPurchaser is Initializable, AccessControlUpgradeable {
 
         processPayment(msg.sender, seriesId, editionId, amount, paymentToken);
         nfbsSold[seriesId][editionId] += amount;
-        nfb.collection.mint(to, amount, seriesId, editionId);
+        nfb.collection.mint(to, amount, seriesId, editionId, 0);
     }
 
     function processPayment(

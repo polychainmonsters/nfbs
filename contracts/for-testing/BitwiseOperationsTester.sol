@@ -1,24 +1,31 @@
 // SPDX-License-Identifier: MIT
-// NFB Contracts v0.0.7
+// NFB Contracts v0.1.0
 pragma solidity ^0.8.9;
 
 /// @dev This contract is only used for testing bitwise operations.
 contract BitwiseOperationsTester {
-    function joinSeriesAndEditionId(
-        uint16 seriesId,
-        uint8 editionId
-    ) public pure returns (uint24 seriesAndEditionId) {
-        // Shift the uint16 value left by 8 bits to make room for the uint8 value
-        // Add the uint8 value to the uint24 value
-        seriesAndEditionId = (seriesId << 8) | editionId;
+    function joinSeriesEditionAndVariant(
+        uint8 seriesId,
+        uint8 editionId,
+        uint8 variantId
+    ) public pure returns (uint24 combinedValue) {
+        // Shift the uint8 series left by 16 bits to make room for the edition and variant values
+        // Shift the uint8 edition left by 8 bits to make room for the variant value
+        // Add all values to the uint24 combinedValue
+        combinedValue =
+            (uint24(seriesId) << 16) |
+            (uint24(editionId) << 8) |
+            variantId;
     }
 
-    function splitSeriesAndEditionId(
-        uint24 seriesAndEditionId
-    ) public pure returns (uint16 seriesId, uint8 editionId) {
-        // Mask the top 8 bits of the uint24 value to get the uint8 value
-        editionId = uint8(seriesAndEditionId & 0xFF);
-        // Shift the uint24 value right by 8 bits to get the uint16 value
-        seriesId = uint16(seriesAndEditionId >> 8);
+    function splitSeriesEditionAndVariant(
+        uint24 combinedValue
+    ) public pure returns (uint8 seriesId, uint8 editionId, uint8 variantId) {
+        // Mask the least significant 8 bits of the uint24 value to get the variant value
+        variantId = uint8(combinedValue & 0xFF);
+        // Shift the uint24 value right by 8 bits and mask the least significant 8 bits to get the edition value
+        editionId = uint8((combinedValue >> 8) & 0xFF);
+        // Shift the uint24 value right by 16 bits to get the series value
+        seriesId = uint8(combinedValue >> 16);
     }
 }
